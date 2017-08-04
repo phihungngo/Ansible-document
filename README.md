@@ -2,5 +2,5 @@
 5/8/2017
 
 ## Diagram Architecture
-![alt text](img/ansible_diagram.png "Description goes here")
+![alt text](img/model.png "Description goes here")
 
