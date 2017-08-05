@@ -1,0 +1,152 @@
+#Ansible là cái gì và nó làm việc như thế nào?
+
+Tiêu chí của Ansible là "Công cụ tự động hóa triển khai, mã nguồn mở, cấu hình đơn giản, không cần agent (phần mềm đại lý) và mạnh mẽ" trích từ Tài liệu của Ansible.
+
+Ansible có những tính năng cơ bản sau:
+
+- Dự phòng tài nguyên (provisioning)
+- Quản lý cấu hình (configuration management)
+- Triển khai ứng dụng (app deployment)
+- Giao hàng liên tục (continous delivery)
+- Bảo mật và tuân thủ (security and compliance)
+- Điều phối (orchestration).
+Ansible kết hợp tốt với các công nghệ:
+1.AWS (Amazon Web Service - dịch vụ điện toán đám mấy của Amazon)
+2.Docker (công nghệ đóng gói các phần mềm cài đặt)
+3.OpenStack (công nghệ vận hành nền tảng như là dịch vụ - infrastructure as service)
+4.Red Hat
+5.Windows
+6.Học lập trình trực tuyến với cơ sở dữ liệu PostgreSQL
+
+
+Hãy kiểm tra các trường hợp chính sử dụng Ansible để hiểu cách nó làm việc và nó hữu ích như thế nào cho các môi trường IT.
+
+##Dự phòng tài nguyên (Provisioning)
+
+Ansible là công cụ quản lý tự động hệ thống mà không cần phải cài đặt phần mềm trên máy tính bị điều khiển (agentless). Nó có thể quản lý máy chủ, thiết bị cân bằng tải, switch, tường lửa nhờ SSH (secure shell). Dù hệ thống là máy chủ vật lý (bare-metal) hay là máy chủ dịch vụ đám mây, Ansible giúp chúng ta quản lý, cấu hình hệ thống rất đơn giản. Đặc tính idempotent chạy lặp lại nhiều lần nhưng cho ra kết quả ổn định, thống nhất, dự đoán được khiến các quản trị viên tin cậy sử dụng Ansible.
+
+Quản lý cấu hình (Configuration management)
+
+Ansible là công cụ cứu tinh giúp chuyên viên quản lý hệ thống tự động hóa các tác vụ buồn tẻ, lặp đi lặp lại (thường phải gõ các câu lệnh dài khó nhớ qua màn hình terminal).
+
+Trước đây, các nhà quản trị hệ thống đã phải viết rất nhiều mã script (thường là bash script) và kết nối tới nhiều server để thực thi chúng. Tuy nhiên môi trường thực thi không đồng nhất: hệ điều hành, phiên bản các gói phần mềm, ... khiến các đoạn mã này rất dễ bị lỗi hoặc gây ra lỗi.
+
+Với Ansible bạn có thể viết một playbooks đơn giản trên ngôn ngữ Python 2.x sử dụng lại các module viết sẵn chất lượng cao, đã kiểm thử trên nhiều môi trường khác nhau. Các module thường là mã nguồn mở (chẳng hạn như AWS, Nagios, PostgreSQL, SSH, APT, File Folder IO) gồm nhiều tác vụ có tham số để lập trình viên tùy biến theo yêu cầu cụ thể. Xem thêm các module core của Ansible và module mở rộng
+Kết quả là, bạn có thể tập trung sáng tạo hơn là quản lý các cấu hình một cách thủ công. Nếu muốn, bạn có thể tự viết riêng module bằng Python.
+
+##Triển khai ứng dụng (App deployment)
+
+Trong Ansible, artifact là những thay đổi nhóm phát triển tạo ra để triển khai tới các server. Số lượng server có thể chỉ một hoặc nhiều đến hàng trăm máy chủ. Ansible kết nối thông qua SSH, không cần kéo từ một kho respository về mỗi server hoặc theo cách cổ điển là copy các file kiểu FTP rất chậm chạp. Ansible đồng bộ các artifact bằng cách cập nhật file mới hoặc  bỏ qua những file không sửa đổi. Cách này cũng tăng tốc độ truyền file và tiết kiệm một lượng lớn băng thông.
+
+Học lập trình trực tuyến với cơ sở dữ liệu PostgreSQL
+Giao diện Ansible Tower bản thu phí. Bản miễn phí giao diện text trên terminal
+Bên cạnh việc truyền file, Ansible cũng giúp cho các server luôn sẵn sàng phục vụ ở chế độ production. Trước khi triển khai ứng dụng lên máy chủ X, Ansible tạm dừng việc các tiến trình giám sát X, tạm loại bỏ X ra khỏi tập máy chủ cân bằng tải, tạm tắt các dịch vụ đang chạy trên X. Sau khi triển khai xong, nó có thể bắt đầu các dịch vụ, gán X vào tập máy chủ cân bằng tải, và giám sát trở lại.
+
+Tất cả điều này không xảy ra cùng lúc trên tất cả các server. Ansible có thể làm việc trên một tập con của các server tại một thời điểm để cung cấp các triển khai không có thời gian chết. Ví dụ tại một thời điểm duy nhất nó có thể triển khai trên 5 server cùng lúc, và sau đó nó có thể triển khai tới 5 server tiếp theo khi kết thúc.
+
+Sau khi thực hiện kịch bản (play book) này, Ansible có thể thực thi lại tại bất kỳ môi trường khác. Lập trình viên hay kiểm thử viên dùng kịch bản này để tạo môi trường lập trình hoặc kiểm thử của riêng họ. Để quay lui (rollback) đợt triển khai, Ansible chỉ cần thông tin điểm cuối mà artifact còn hoạt động. Tính năng này khá giống với commit và rollback trong SQL transaction, với kịch bản bash script bạn sẽ phải tự code thủ công rất nhiều để có tính năng tương tự. Ansi
+
+Ngoài ra để hủy bỏ một triển khai vì bất kỳ lý do nào, tất cả cái Ansible cần là vị trí làm việc cuối cùng được biết đến của artifact được triển khai. Sau đó Ansible triển khai lại để đưa hệ thống về trạng thái ổn định.
+
+##Giao hàng liên tục (Continuous delivery)
+
+Mục tiêu của giao hàng liên tục là thường xuyên - nhanh chóng triển khai phiên bản cập nhật đã kiểm thử tự động lên môi trường sản xuất . Để đạt được mục tiêu này, cần sử dụng các công cụ tốt nhất cho phép phát hành thường xuyên mà không ngưng hoạt động và yêu cầu ít nhất sự can thiệp của người. Ansible thực hiện các triển khai mà không có thời gian chết. Yêu cầu khác của giao hàng liên tục là giảm tối đa xử lý thủ công và chuyển qua tự động hóa. Ansible tự động hóa nhiệm vụ từ chuẩn bị máy chủ ảo, cài đặt phần mềm đến cấu hình dịch vụ cho đến khi hệ thống vận hành được. Sau khi kịch bản (playbook) được tạo và kiểm tra, việc còn lại đặt playbook trong hệ thống tích hợp liên tục và để Ansible thực thi.
+
+Bảo mật và tuân thủ (Security and Compliance)
+
+Bảo mật tối quan trọng. Giữ hệ thống an toàn là một điều khó đạt được nhất.  Để đảm bảo tính bảo mật cho hệ thống, định nghĩa bảo mật là không đủ, bạn phải áp dụng các cơ chế bảo mật và giám sát liên tục hệ thống để chắc rằng chúng liên tục tuân thủ bảo mật.
+
+Ansible tự động hóa cấu hình các tập luật đóng mở cổng tường lửa, cấp phép tùy chỉnh theo từng người dùng hoặc nhóm. Ansible tin cậy vì các lệnh cấu hình bảo mật được lập trình thành kịch bản trong playbook. Playbook có thể quản lý phiên bản ví dụ dùng Git. Quản trị hệ thống có thể điều chỉnh và chạy lại trên nhiều máy chủ. Ví dụ: có thể bổ xung lệnh nâng cấp OpenSSL vá lỗi HearBleed cho toàn bộ máy chủ chỉ bằng thêm vào một tác vụ trong playbook.
+
+##Điều phối (Orchestration)
+
+Ansible đảm bảo rằng tất cả các nhiệm vụ được cung cấp theo thứ tự thích hợp và thiết lập một sự hài hòa giữa tất cả các tài nguyên mà nó quản lý. Tính năng quản lý cấu hình và triển khai của Ansible giúp điều phối dễ dàng các đợt triển khai nhiều tầng. Ví dụ khi triển khai một ngăn xếp phần mềm, làm sao cơ sở dữ liệu sẵn sàng trước application server hoặc phải cấu hình mạng thông suốt trước khi bổ xung máy chủ vào nhóm máy chủ cân bằng tải.
+
+Ansible phối hợp tốt với các công cụ điều phối CloudFormation của Amazon, Heat của OpenStack, Swarm của Docker ...Theo các này, thay vì học các nền tảng, ngôn ngữ, quy tắc khác nhau, người tập trung viết kịch bản cú pháp YAML gọi các tác vụ từ các module có sẵn.
+
+##Module của Ansible là gì?
+
+Các module hoặc các thư viện module cung cấp cho Ansible các phương tiện để điều khiển hoặc quản lý các tài nguyên trên local hoặc các remote server. Chúng thực hiện một loạt các chức năng. Ví dụ một module có thể chịu trách nhiệm khởi động lại một máy hoặc có thể đơn giản hiển thị một tin nhắn trên màn hình.
+
+Ansible cho phép người dùng viết các module của riêng mình và cũng cung cấp các module core hoặc bổ sung.
+
+- Các module lõi (core module):
+
+Là các module được team Ansible duy trì và luôn luôn đi kèm với Ansible. Chúng cũng nhận được thứ tự ưu tiên cao hơn cho tất cả các request so với các module bổ sung.
+
+Các module này được lưu trên GitHub trong  ansible-modules-core repository.
+
+- Các module bổ sung (extra module):
+
+Các module này hiện tại đi kèm với Ansible, nhưng có thể sẽ tách ra trong tương lai. Chúng hầu như được duy trì bởi cộng đồng. Các module non-core hoàn toàn có thể sử dụng, nhưng có thể nhận được tỉ lệ trả lời thấp hơn cho các vấn đề (issues) và các pull request.
+
+Các module bổ sung có thể trở thành các module core theo thời gian.
+
+Các module này được lưu trên GitHub trong ansible-modules-extras repository.
+
+Còn Ansible playbook thì sao?
+
+Ansible giúp chúng ta tổ chức công việc của mình theo nhiều cách. Trong hình thức trực tiếp nhất, chúng ta có thể làm việc với các module của Ansible sử dụng công cụ dòng lệnh "ansible" và file inventory.
+
+Inventory
+
+File inventory để giúp Ansible biết các server mà nó cần kết nối sử dụng SSH, thông tin kết nối nó yêu cầu, và tùy chọn các biến gắn liền với các server này.
+
+File inventory có định dạng là INI. Trong file inventory, chúng ta có thể chỉ định nhiều hơn một máy chủ và gom chúng thành nhiều nhóm.
+
+Ví dụ file inventory hosts.ini như sau:
+
+[dbservers]
+db.example.com
+Ở đây chúng ta có một máy chủ duy nhất là "db.example.com" trong một nhóm các máy chủ gọi là "dbservers". Trong file inventory, chúng ta cũng có thể đính kèm các cổng SSH
+
+tùy chỉnh, các SSH username, các key SSH, thông tin proxy, các biến, …
+
+Khi chúng ta có một file inventory đã sẵn sàng, trong thứ tự để xem các server cơ sở dữ liệu của chúng ta, chúng ta có thể gọi module "command" của Ansible và thực thi lệnh "uptime" trên các server này:
+
+ansible dbservers -i hosts.ini -m command -a "uptime"
+Ở đây chúng ta hướng dẫn Ansible đọc các máy chủ từ file hosts.ini, kết nối chúng sử dụng SSH, thực hiện lệnh "uptime" trên mỗi máy chủ, và sau đó in chúng ra màn hình. Kiểu thực thi module này được gọi là một lệnh ad-hoc.
+
+Đầu ra của command sẽ như thế này:
+
+gulcin@apatheticmagpie ~/blog/ansible-loves-postgresql # ansible dbservers -i hosts.ini -m command -a "uptime"
+db.example.com | success | rc=0 >>
+21:16:24 up 93 days,  9:17,  4 users,  load average: 0.08, 0.03, 0.05
+Tuy nhiên, nếu kịch bản chứa nhiều hơn một bước, sẽ rất khó để quản lý chỉ bằng cách sử dụng các lệnh ad-hoc.
+
+Đây là lúc chúng ta cần các Ansible playbook. Nó cho phép chúng ta tổ chức giải pháp của mình trong một file playbook bằng cách tích hợp tất cả các bước bằng các phương tiện của các nhiệm vụ (task), các biến, các role, các template, các handler, và một inventory.
+
+Hãy xem xét một cách tổng quan về các thuật ngữ này để hiểu chúng có thể giúp chúng ta như thế nào.
+
+- Các nhiệm vụ (tasks)
+
+Một khái niệm quan trọng khác là các nhiệm vụ. Mỗi nhiệm vụ của Ansible chứa một tên, một module để gọi, các tham số của module, và tùy chọn các điều kiện trước và sau. Chúng cho phép chúng ta gọi các module Ansible và truyền thông tin tới các nhiệm vụ liên tiếp.
+
+- Các biến
+
+Biến hữu dụng cho việc tái sử dụng thông tin chúng ta cung cấp hoặc tập hợp. Chúng ta có thể định nghĩa biến trong các file inventory, các file YAML hoặc trong các playbook. 
+
+Playbook
+
+Ansible playbook được viết bằng cú pháp YAML . Nó có thể chứa nhiều hơn một play. Mỗi play chứa tên của các nhóm máy chủ để kết nối tới và các nhiệm vụ nó cần thực hiện. Nó cũng có thể chứa các biến/các role/các handler, nếu đã định nghĩa.
+
+Bây giờ chúng ta xem một playbook rất đơn giản để thấy nó có thể được cấu trúc như thế nào:
+
+```
+---
+
+- hosts: dbservers
+ gather_facts: no
+
+ vars:
+   who: World
+
+ tasks:
+ - name: say hello
+   debug: msg="Hello {{ who }}"
+
+ - name: retrieve the uptime
+   command: uptime
+```
+Trong playbook rất đơn giản này, chúng ta đã nói rằng Ansible sẽ thao tác trên các server đã được định nghĩa trong nhóm máy chủ "dbservers". Chúng ta đã tạo một biến gọi là "who" và sau đó chúng ta định nghĩa các nhiệm vụ của chúng ta. Chú ý rằng trong nhiệm vụ đầu tiên nơi chúng ta in ra một thông điệp debug, chúng ta đã sử dụng biến "who" và Ansible in "Hello World"  ra màn hình. Trong nhiệm vụ thứ 2, chúng ta nói với Ansible kết nối tới mỗi máy chủ và sau đó thực thi lệnh "uptime".
+
