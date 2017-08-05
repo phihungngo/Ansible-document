@@ -3,7 +3,6 @@
 
 ## I. Diagram Architecture
 ![alt text](img/model.png "Description goes here")
-## II. Prequirement Config
 - Ansible Control Node
 ```
 Hostname: AnsibleCTL
@@ -24,89 +23,114 @@ IP: 172.16.69.24
 Netmask: 255.255.255.0
 GW: 172.16.69.1
 ```
+## II. Prequirement Config
 - Install SSH (All Node)
 ```
 yum -y install openssh-server
 ```
-- Create user acess SSH (All Node)
+### Managed Node
+- Create user acess SSH
 ```
-[root@AnsibleCTL ~]# useradd ansible
-[root@AnsibleCTL ~]# passwd ansible
+[root@ServerA ~]# useradd ansible
+[root@ServerA ~]# passwd ansible
 Changing password for user ansible.
 New password: 
 Retype new password: 
-[root@AnsibleCTL ~]# 
+[root@ServerA ~]# 
 ```
  - Add user to sudo (All Node)
 ```
-[root@AnsibleCTL ~]# visudo
+[root@ServerA ~]# visudo
 ...
 ## Allow root to run any commands anywhere
 root    ALL=(ALL)       ALL
 ansible ALL=(ALL)       NOPASSWD:ALL
 ...
 ```
-- Create SSH Key
 ### Control Node
  - Create SSH Key
 ```
-[root@AnsibleCTL ~]# 
-[root@AnsibleCTL ~]# su ansible
-[ansible@AnsibleCTL root]$ ssh-keygen
+[root@AnsibleCTL ~]# ssh-keygen
 Generating public/private rsa key pair.
-Enter file in which to save the key (/home/ansible/.ssh/id_rsa): 
+Enter file in which to save the key (/root/.ssh/id_rsa): 
 Enter passphrase (empty for no passphrase): 
 Enter same passphrase again: 
-Your identification has been saved in /home/ansible/.ssh/id_rsa.
-Your public key has been saved in /home/ansible/.ssh/id_rsa.pub.
+Your identification has been saved in /root/.ssh/id_rsa.
+Your public key has been saved in /root/.ssh/id_rsa.pub.
 The key fingerprint is:
-09:ea:fb:b6:db:bb:60:34:a4:a6:f6:82:8a:66:4d:37 ansible@AnsibleCTL.local
+76:d4:09:a3:db:1a:f6:07:a1:69:d1:51:10:8f:a4:66 root@AnsibleCTL.local
 The key's randomart image is:
 +--[ RSA 2048]----+
+|          B+.    |
+|         = B .   |
+|        E = +    |
+|       o B .     |
+|        S +      |
+|       + = .     |
+|        . . .    |
+|           .     |
 |                 |
-|                 |
-|      o          |
-|     + . .       |
-|    + o S        |
-|   = E .         |
-| .= o +          |
-|o+.o o.o         |
-|*  .oo+o+o       |
 +-----------------+
+[root@AnsibleCTL ~]# 
+
 ```
  - Copy key to Managed Node
  ```
- ////////// ServerA NODE
-[ansible@AnsibleCTL root]$ ssh-copy-id ansible@172.16.69.23
+[root@AnsibleCTL ~]# ssh-copy-id root@172.16.69.23
 The authenticity of host '172.16.69.23 (172.16.69.23)' can't be established.
 ECDSA key fingerprint is eb:ca:31:3f:0b:8b:de:85:54:b7:13:12:e4:c6:d6:2c.
 Are you sure you want to continue connecting (yes/no)? yes
 /usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
 /usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
-ansible@172.16.69.23's password: 
+root@172.16.69.23's password: 
 
 Number of key(s) added: 1
 
-Now try logging into the machine, with:   "ssh 'ansible@172.16.69.23'"
+Now try logging into the machine, with:   "ssh 'root@172.16.69.23'"
 and check to make sure that only the key(s) you wanted were added.
-
-[ansible@AnsibleCTL root]$ 
-
  ```
- ```
- ////// ServerB NODE
-[ansible@AnsibleCTL root]$ ssh-copy-id ansible@172.16.69.24
+```
+[root@AnsibleCTL ~]# ssh-copy-id root@172.16.69.24
 The authenticity of host '172.16.69.24 (172.16.69.24)' can't be established.
 ECDSA key fingerprint is eb:ca:31:3f:0b:8b:de:85:54:b7:13:12:e4:c6:d6:2c.
 Are you sure you want to continue connecting (yes/no)? yes
 /usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
 /usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
-ansible@172.16.69.24's password: 
+root@172.16.69.24's password: 
+Permission denied, please try again.
+root@172.16.69.24's password: 
 
 Number of key(s) added: 1
 
-Now try logging into the machine, with:   "ssh 'ansible@172.16.69.24'"
+Now try logging into the machine, with:   "ssh 'root@172.16.69.24'"
 and check to make sure that only the key(s) you wanted were added.
-
-[ansible@AnsibleCTL root]$
+```
+ ## III. Install Ansible Control Node
  ```
+ [root@AnsibleCTL ~]# yum install epel-release -y
+ [root@AnsibleCTL ~]# yum update -y
+	[root@AnsibleCTL ~]# yum install git python python-devel python-pip openssl ansible -y
+ ```
+ - Remove '#' at line:
+ ```
+[root@AnsibleCTL ~]# vi /etc/ansible/ansible.cfg
+...
+[defaults]
+...
+inventory      = /etc/ansible/hosts
+...
+sudo_user      = root
+...
+```
+- Config host and group
+```
+[root@AnsibleCTL ~]# vi /etc/ansible/hosts
+[controll]
+172.16.69.26
+
+[ServerA]
+172.16.69.23
+
+[ServerB]
+172.16.69.24
+```
