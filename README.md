@@ -38,7 +38,7 @@ New password:
 Retype new password: 
 [root@ServerA ~]# 
 ```
- - Add user to sudo (All Node)
+ - Add user to sudo
 ```
 [root@ServerA ~]# visudo
 ...
@@ -75,41 +75,33 @@ The key's randomart image is:
 
 ```
  - Copy key to Managed Node
- ```
-[root@AnsibleCTL ~]# ssh-copy-id root@172.16.69.23
-The authenticity of host '172.16.69.23 (172.16.69.23)' can't be established.
-ECDSA key fingerprint is eb:ca:31:3f:0b:8b:de:85:54:b7:13:12:e4:c6:d6:2c.
-Are you sure you want to continue connecting (yes/no)? yes
-/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
-/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
-root@172.16.69.23's password: 
-
-Number of key(s) added: 1
-
-Now try logging into the machine, with:   "ssh 'root@172.16.69.23'"
-and check to make sure that only the key(s) you wanted were added.
- ```
 ```
-[root@AnsibleCTL ~]# ssh-copy-id root@172.16.69.24
-The authenticity of host '172.16.69.24 (172.16.69.24)' can't be established.
-ECDSA key fingerprint is eb:ca:31:3f:0b:8b:de:85:54:b7:13:12:e4:c6:d6:2c.
-Are you sure you want to continue connecting (yes/no)? yes
+[root@AnsibleCTL ~]# ssh-copy-id ansible@172.16.69.23
 /usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
 /usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
-root@172.16.69.24's password: 
-Permission denied, please try again.
-root@172.16.69.24's password: 
+ansible@172.16.69.23's password: 
 
 Number of key(s) added: 1
 
-Now try logging into the machine, with:   "ssh 'root@172.16.69.24'"
+Now try logging into the machine, with:   "ssh 'ansible@172.16.69.23'"
+and check to make sure that only the key(s) you wanted were added.
+```
+```
+[root@AnsibleCTL ~]# ssh-copy-id ansible@172.16.69.24
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+ansible@172.16.69.24's password: 
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'ansible@172.16.69.24'"
 and check to make sure that only the key(s) you wanted were added.
 ```
  ## III. Install Ansible Control Node
  ```
- [root@AnsibleCTL ~]# yum install epel-release -y
- [root@AnsibleCTL ~]# yum update -y
-	[root@AnsibleCTL ~]# yum install git python python-devel python-pip openssl ansible -y
+[root@AnsibleCTL ~]# yum install epel-release -y
+[root@AnsibleCTL ~]# yum update -y
+[root@AnsibleCTL ~]# yum install git python python-devel python-pip openssl ansible -y
  ```
  - Remove '#' at line:
  ```
@@ -134,3 +126,25 @@ sudo_user      = root
 [ServerB]
 172.16.69.24
 ```
+## IV. Testing
+### Control Node
+```
+[root@AnsibleCTL ~]# ansible ServerA -m ping --user=ansible
+172.16.69.23 | SUCCESS => {
+    "changed": false, 
+    "ping": "pong"
+}
+```
+```
+[root@AnsibleCTL ~]# ansible ServerB -m ping --user=ansible
+172.16.69.24 | SUCCESS => {
+    "changed": false, 
+    "ping": "pong"
+}
+```
+```
+ -m: command
+ --user: user access ssh
+```
+
+
