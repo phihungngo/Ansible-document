@@ -128,6 +128,7 @@ sudo_user      = root
 ```
 ## IV. Testing
 ### Control Node
+- Ping 
 ```
 [root@AnsibleCTL ~]# ansible ServerA -m ping --user=ansible
 172.16.69.23 | SUCCESS => {
@@ -143,7 +144,8 @@ sudo_user      = root
 }
 ```
 ```
- -m: command
+----------------------
+ -m: command module
  --user: user access ssh
 ```
 
